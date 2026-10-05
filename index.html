@@ -8,7 +8,6 @@
     :root {
       --bg-deep: #090d17;
       --bg-panel: #101827;
-      --bg-table: #0e2d22;
       --gold: #f7c948;
       --gold-2: #ff9f1c;
       --green: #2dd4bf;
@@ -27,7 +26,7 @@
       place-items: center;
       font-family: Arial, Helvetica, sans-serif;
       background:
-        radial-gradient(circle at top, rgba(247, 201, 72, 0.18), transparent 20%),
+        radial-gradient(circle at top, rgba(247, 201, 72, 0.16), transparent 20%),
         linear-gradient(135deg, var(--bg-deep), #111827 40%, #0a1020);
       color: var(--text);
       overflow-x: hidden;
@@ -36,7 +35,7 @@
     .app {
       width: min(980px, 94vw);
       background: rgba(14, 20, 30, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: 30px;
       box-shadow: 0 30px 80px var(--shadow);
       padding: 22px;
@@ -126,7 +125,7 @@
     .symbol {
       position: relative;
       z-index: 1;
-      font-size: clamp(2.4rem, 4vw, 4rem);
+      font-size: clamp(2.6rem, 4vw, 4rem);
       font-weight: 900;
       letter-spacing: 1px;
       color: #111827;
@@ -281,14 +280,14 @@
 
   <script>
     const SYMBOLS = [
-      { name: "7", icon: "7", weight: 4, multiplier: 16, color: "#fbbf24" },
-      { name: "BAR", icon: "BAR", weight: 7, multiplier: 10, color: "#e2e8f0" },
-      { name: "CH", icon: "CH", weight: 12, multiplier: 5, color: "#fb7185" },
-      { name: "BELL", icon: "BELL", weight: 9, multiplier: 8, color: "#fef08a" },
-      { name: "LEM", icon: "LEM", weight: 15, multiplier: 4, color: "#bef264" },
-      { name: "DIAM", icon: "DIAM", weight: 6, multiplier: 12, color: "#67e8f9" },
-      { name: "STAR", icon: "★", weight: 3, multiplier: 20, color: "#f9a8d4" },
-      { name: "WILD", icon: "WILD", weight: 2, multiplier: 30, color: "#c084fc" }
+      { id: "seven", icon: "7", weight: 4, multiplier: 16, color: "#fbbf24" },
+      { id: "cherry", icon: "🍒", weight: 12, multiplier: 5, color: "#fb7185" },
+      { id: "bell", icon: "🔔", weight: 9, multiplier: 8, color: "#fef08a" },
+      { id: "lemon", icon: "🍋", weight: 15, multiplier: 4, color: "#bef264" },
+      { id: "diamond", icon: "💎", weight: 6, multiplier: 12, color: "#67e8f9" },
+      { id: "star", icon: "⭐", weight: 3, multiplier: 20, color: "#f9a8d4" },
+      { id: "coin", icon: "💰", weight: 5, multiplier: 10, color: "#facc15" },
+      { id: "wild", icon: "✦", weight: 2, multiplier: 30, color: "#c084fc" }
     ];
 
     const state = {
@@ -320,20 +319,20 @@
     function getWeightedSymbol() {
       const pool = [];
       SYMBOLS.forEach(symbol => {
-        for (let i = 0; i < symbol.weight; i++) pool.push(symbol.name);
+        for (let i = 0; i < symbol.weight; i++) pool.push(symbol.id);
       });
       return pool[Math.floor(Math.random() * pool.length)];
     }
 
-    function getSymbolInfo(symbolName) {
-      return SYMBOLS.find(s => s.name === symbolName);
+    function getSymbolInfo(symbolId) {
+      return SYMBOLS.find(s => s.id === symbolId);
     }
 
     function renderSlots(reels) {
-      reels.forEach((symbolName, index) => {
-        const info = getSymbolInfo(symbolName);
+      reels.forEach((symbolId, index) => {
+        const info = getSymbolInfo(symbolId);
         const el = elements.slots[index];
-        el.textContent = info ? info.icon : symbolName;
+        el.textContent = info ? info.icon : symbolId;
         el.style.color = info ? info.color : "#111827";
       });
     }
@@ -396,7 +395,11 @@
       elements.reels.forEach(reel => reel.classList.add("active"));
 
       const interval = setInterval(() => {
-        const randomReels = [getWeightedSymbol(), getWeightedSymbol(), getWeightedSymbol()];
+        const randomReels = [
+          getWeightedSymbol(),
+          getWeightedSymbol(),
+          getWeightedSymbol()
+        ];
         renderSlots(randomReels);
         i++;
 
@@ -424,7 +427,12 @@
       elements.spinBtn.disabled = true;
       elements.spinBtn.style.opacity = "0.7";
 
-      const finalReels = [getWeightedSymbol(), getWeightedSymbol(), getWeightedSymbol()];
+      const finalReels = [
+        getWeightedSymbol(),
+        getWeightedSymbol(),
+        getWeightedSymbol()
+      ];
+
       spinAnimation(finalReels);
 
       setTimeout(() => {
@@ -472,7 +480,7 @@
     });
 
     updateHud();
-    renderSlots(["7", "7", "7"]);
+    renderSlots(["seven", "seven", "seven"]);
   </script>
 </body>
 </html>
