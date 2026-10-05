@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Casino Slots</title>
+  <style>
+    :root {
+      --bg1: #0f172a;
+      --bg2: #111827;
+      --panel: rgba(15, 23, 42, 0.8);
+      --gold: #fbbf24;
+      --gold-2: #f59e0b;
+      --green: #22c55e;
+      --red: #ef4444;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(251, 191, 36, 0.25), transparent 30%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--text);
+    }
+
+    .app {
+      width: min(92vw, 900px);
+      background: rgba(17, 24, 39, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 28px;
+      box-shadow: 0 24px 80px var(--shadow);
+      padding: 28px 24px 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 12px;
+    }
+
+    .title {
+      font-size: clamp(1.7rem, 3vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--gold);
+      text-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+    }
+
+    .chip {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #1f2937;
+      font-weight: 800;
+      padding: 10px 18px;
+      border-radius: 999px;
+      box-shadow: 0 10px 25px rgba(251, 191, 36, 0.35);
+    }
+
+    .machine {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 24px 20px 18px;
+      box-shadow: inset 0 0 25px rgba(255,255,255,0.04);
+    }
+
+    .reels {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .reel {
+      position: relative;
+      height: 180px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #f8fafc, #dbeafe);
+      border: 4px solid rgba(15, 23, 42, 0.8);
+      box-shadow:
+        inset 0 0 18px rgba(255,255,255,0.8),
+        0 12px 30px rgba(0,0,0,0.22);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .reel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(0,0,0,0.05));
+      pointer-events: none;
+    }
+
+    .symbol {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(2rem, 3vw, 3.2rem);
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #0f172a;
+      text-shadow: 0 2px 8px rgba(255,255,255,0.45);
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .reel.spin .symbol {
+      animation: bounce 0.18s linear infinite alternate;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(-6px) scale(0.98); filter: brightness(0.95); }
+      to   { transform: translateY(6px) scale(1.02); filter: brightness(1.1); }
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 12px 14px;
+      text-align: center;
+    }
+
+    .label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .value {
+      font-size: clamp(1.15rem, 2vw, 1.7rem);
+      font-weight: 800;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 14px;
+      padding: 14px 22px;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(1px); }
+
+    .spin-btn {
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      color: #1f2937;
+      box-shadow: 0 12px 24px rgba(251, 191, 36, 0.25);
+      min-width: 180px;
+    }
+
+    .bet-btn {
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .message {
+      margin-top: 18px;
+      min-height: 32px;
+      text-align: center;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .message.win {
+      color: #86efac;
+      text-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+    }
+
+    .message.lose {
+      color: #fca5a5;
+      text-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+    }
+
+    @media (max-width: 620px) {
+      .app { padding: 18px 14px 16px; }
+      .reels { gap: 10px; }
+      .reel { height: 140px; }
+      .hud { grid-template-columns: 1fr; }
+      .controls { flex-direction: column; }
+      .spin-btn, .bet-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="title">🎰 JACKPOT CITY</div>
+      <div class="chip">Virtuální body</div>
+    </div>
+
+    <div class="machine">
+      <div class="reels">
+        <div class="reel"><div class="symbol" id="slot0">7</div></div>
+        <div class="reel"><div class="symbol" id="slot1">7</div></div>
+        <div class="reel"><div class="symbol" id="slot2">7</div></div>
+      </div>
+
+      <div class="hud">
+        <div class="stat">
+          <span class="label">Zůstatek</span>
+          <span class="value" id="balance">100</span>
+        </div>
+        <div class="stat">
+          <span class="label">Sázka</span>
+          <span class="value" id="bet">20</span>
+        </div>
+        <div class="stat">
+          <span class="label">Výhra</span>
+          <span class="value" id="win">0</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="bet-btn" id="decreaseBet">- Sázka</button>
+        <button class="spin-btn" id="spinBtn">SPIN</button>
+        <button class="bet-btn" id="increaseBet">+ Sázka</button>
+      </div>
+
+      <div class="message" id="message">Vyzkoušej štěstí!</div>
+    </div>
+  </div>
+
+  <script>
+    const SYMBOLS = [
+      { name: "7", weight: 3, multiplier: 12, color: "#fbbf24" },
+      { name: "BAR", weight: 5, multiplier: 8, color: "#f8fafc" },
+      { name: "CH", weight: 10, multiplier: 5, color: "#fb7185" },
+      { name: "BELL", weight: 8, multiplier: 6, color: "#facc15" },
+      { name: "LEM", weight: 12, multiplier: 4, color: "#a3e635" },
+      { name: "DIAM", weight: 4, multiplier: 10, color: "#38bdf8" }
+    ];
+
+    const state = {
+      balance: 100,
+      bet: 20,
+      spinning: false
+    };
+
+    const elements = {
+      balance: document.getElementById("balance"),
+      bet: document.getElementById("bet"),
+      win: document.getElementById("win"),
+      message: document.getElementById("message"),
+      spinBtn: document.getElementById("spinBtn"),
+      increaseBet: document.getElementById("increaseBet"),
+      decreaseBet: document.getElementById("decreaseBet"),
+      slots: [
+        document.getElementById("slot0"),
+        document.getElementById("slot1"),
+        document.getElementById("slot2")
+      ]
+    };
+
+    function getWeightedSymbol() {
+      const pool = [];
+      SYMBOLS.forEach(symbol => {
+        for (let i = 0; i < symbol.weight; i++) {
+          pool.push(symbol.name);
+        }
+      });
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function renderSlots(reels) {
+      reels.forEach((symbol, index) => {
+        const item = SYMBOLS.find(s => s.name === symbol);
+        const slot = elements.slots[index];
+        slot.textContent = symbol;
+        slot.style.color = item ? item.color : "#0f172a";
+      });
+    }
+
+    function updateHud() {
+      elements.balance.textContent = state.balance;
+      elements.bet.textContent = state.bet;
+      elements.win.textContent = "0";
+    }
+
+    function playTone(freq, duration, type = "sine", volume = 0.02) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = type;
+      osc.frequency.value = freq;
+
+      gain.gain.value = volume;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      setTimeout(() => {
+        osc.stop();
+        ctx.close();
+      }, duration);
+    }
+
+    function payout(reels, bet) {
+      const [a, b, c] = reels;
+
+      if (a === b && b === c) {
+        const symbol = SYMBOLS.find(item => item.name === a);
+        return bet * symbol.multiplier;
+      }
+
+      if (a === b || a === c || b === c) {
+        return bet * 2;
+      }
+
+      return 0;
+    }
+
+    function spinAnimation(reels) {
+      const frames = 12;
+      let counter = 0;
+
+      const interval = setInterval(() => {
+        const randomReels = [getWeightedSymbol(), getWeightedSymbol(), getWeightedSymbol()];
+        renderSlots(randomReels);
+        counter++;
+
+        if (counter >= frames) {
+          clearInterval(interval);
+          renderSlots(reels);
+        }
+      }, 80);
+    }
+
+    function setMessage(text, type = "") {
+      elements.message.textContent = text;
+      elements.message.className = "message";
+      if (type) elements.message.classList.add(type);
+    }
+
+    function spin() {
+      if (state.spinning) return;
+      if (state.bet > state.balance) {
+        setMessage("Nemáš dostatek bodů!", "lose");
+        return;
+      }
+
+      state.spinning = true;
+      state.balance -= state.bet;
+      updateHud();
+
+      elements.spinBtn.disabled = true;
+      elements.spinBtn.style.opacity = "0.7";
+
+      const reels = [
+        getWeightedSymbol(),
+        getWeightedSymbol(),
+        getWeightedSymbol()
+      ];
+
+      spinAnimation(reels);
+
+      setTimeout(() => {
+        const win = payout(reels, state.bet);
+
+        if (win > 0) {
+          state.balance += win;
+          setMessage(`Výhra: ${win} bodů! 🎉`, "win");
+          playTone(880, 180, "triangle", 0.04);
+          setTimeout(() => playTone(1180, 180, "triangle", 0.045), 120);
+          setTimeout(() => playTone(1500, 220, "triangle", 0.05), 240);
+        } else {
+          setMessage("Prohrál jsi tuto kolo. Zkus to znova!", "lose");
+          playTone(220, 180, "sawtooth", 0.03);
+        }
+
+        elements.win.textContent = win;
+        updateHud();
+
+        state.spinning = false;
+        elements.spinBtn.disabled = false;
+        elements.spinBtn.style.opacity = "1";
+      }, 1000);
+    }
+
+    function adjustBet(delta) {
+      if (state.spinning) return;
+
+      const nextBet = state.bet + delta;
+      if (nextBet >= 10 && nextBet <= 50 && nextBet <= state.balance) {
+        state.bet = nextBet;
+        updateHud();
+      } else if (nextBet > state.balance) {
+        setMessage("Nemůžeš sázet víc, než máš na účtu.", "lose");
+      } else {
+        setMessage("Sázka musí být mezi 10 a 50 body.", "lose");
+      }
+    }
+
+    document.getElementById("spinBtn").addEventListener("click", spin);
+    document.getElementById("increaseBet").addEventListener("click", () => adjustBet(10));
+    document.getElementById("decreaseBet").addEventListener("click", () => adjustBet(-10));
+
+    updateHud();
+    renderSlots(["7", "7", "7"]);
+  </script>
+</body>
+</html>
